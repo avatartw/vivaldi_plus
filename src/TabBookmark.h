@@ -461,7 +461,7 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam)
             }
         }
         // 在标签栏上 且为双击或右键
-        if (isOnOneTab && ((wParam == WM_LBUTTONDBLCLK) ||
+        if (isOnOneTab && ((EnableDoubleClickCloseTab && wParam == WM_LBUTTONDBLCLK) ||
                            (EnableRightClickCloseTab && !isOnlyOneTab &&
                             wParam == WM_RBUTTONUP && !IsPressed(VK_SHIFT))))
         {
