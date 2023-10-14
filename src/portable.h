@@ -112,6 +112,22 @@ std::wstring GetDiskCacheDir()
     return std::wstring(cacheDirBuffer);
 }
 
+// 如果 ini 存在，從中讀取 CommandLine；如果 ini 不存在，或者存在，但是 CommandLine 為空，則返回空字串
+std::wstring GetCrCommandLine()
+{
+    if (IsCustomIniExist())
+    {
+        std::wstring IniPath = GetAppDir() + L"\\chrome++.ini";
+        TCHAR CommandLineBuffer[MAX_PATH];
+        ::GetPrivateProfileStringW(L"General", L"CommandLine", L"", CommandLineBuffer, MAX_PATH, IniPath.c_str());
+        return std::wstring(CommandLineBuffer);
+    }
+    else
+    {
+        return std::wstring(L"");
+    }
+}
+
 // 构造新命令行
 // Parses the command line param into individual arguments and inserts
 // additional arguments for portable mode.
@@ -154,6 +170,15 @@ std::wstring GetCommand(LPWSTR param)
             // args.push_back(L"--disable-background-networking");
 
             args.push_back(L"--disable-features=RendererCodeIntegrity,FlashDeprecationWarning");
+
+            // 獲取命令行，然後追加參數
+            {
+                auto cr_command_line = GetCrCommandLine();
+
+                wchar_t temp[MAX_PATH];
+                wsprintf(temp, L"%s", cr_command_line.c_str());
+                args.push_back(temp);
+            }
 
             // if (IsNeedPortable())
             {
