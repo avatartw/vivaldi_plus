@@ -17,6 +17,7 @@ right_click_close_tab=1
 keep_last_tab=1
 wheel_tab=1
 wheel_tab_when_press_rbutton=1
+[General]
 ; Appends Chrome startup parameters
 ; You can imitate the form below to write
 ; CommandLine=--no-first-run --disable-logging --no-report-upload
