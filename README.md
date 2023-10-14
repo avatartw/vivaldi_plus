@@ -14,6 +14,17 @@ cache=%app%\..\Cache
 [features]
 double_click_close_tab=1
 right_click_close_tab=1
+keep_last_tab=1
+wheel_tab=1
+wheel_tab_when_press_rbutton=1
+; Appends Chrome startup parameters
+; You can imitate the form below to write
+; CommandLine=--no-first-run --disable-logging --no-report-upload
+
+; 追加 Chrome 启动参数
+; 可以模仿下面的形式来写
+; CommandLine=--no-first-run --disable-logging --no-report-upload
+CommandLine=
 ```
 # 获取
 采用GitHub Actions自动编译发布，下载地址：[Powered by nightly.link](https://nightly.link/czyt/vivaldi_plus/workflows/build/main)

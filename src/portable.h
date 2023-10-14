@@ -117,7 +117,7 @@ std::wstring GetCrCommandLine()
 {
     if (IsCustomIniExist())
     {
-        std::wstring IniPath = GetAppDir() + L"\\chrome++.ini";
+        std::wstring IniPath = GetAppDir() + L"\\config.ini";
         TCHAR CommandLineBuffer[MAX_PATH];
         ::GetPrivateProfileStringW(L"General", L"CommandLine", L"", CommandLineBuffer, MAX_PATH, IniPath.c_str());
         return std::wstring(CommandLineBuffer);
