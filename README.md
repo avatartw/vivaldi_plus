@@ -28,7 +28,7 @@ wheel_tab_when_press_rbutton=1
 CommandLine=
 ```
 # 获取
-采用GitHub Actions自动编译发布，下载地址：[Powered by nightly.link](https://nightly.link/czyt/vivaldi_plus/workflows/build/main)
+采用GitHub Actions自动编译发布，下载地址：[Powered by nightly.link](https://nightly.link/avatartw/vivaldi_plus/workflows/build/main)
 
 [![build status](https://github.com/czyt/vivaldi_plus/actions/workflows/build.yml/badge.svg)](https://github.com/czyt/vivaldi_plus/actions/workflows/build.yml)
 # 安装
