@@ -172,12 +172,41 @@ std::wstring GetCommand(LPWSTR param)
             args.push_back(L"--disable-features=RendererCodeIntegrity,FlashDeprecationWarning");
 
             // 獲取命令行，然後追加參數
+            // 如果存在 = 號，參數會被識別成值
+            // 修改方法是截取拆分，然後多次 args.push_back
+            // 首先檢測是否存在 =，不存在按照原有方法處理
+            // 若存在，以對應到的第一個 = 為中心，向前對應 -- 為開頭，向後對應空格為結尾，把這整一段提取出來，單獨 push_back
+            // 然後再把提取出來的部分從原有的字串中刪除，再 push_back 剩下的部分
+            // 重複上述過程，直到字串中不再存在 = 號
+            // 這樣就可以保證參數不會被識別成值了
             {
                 auto cr_command_line = GetCrCommandLine();
 
-                wchar_t temp[MAX_PATH];
-                wsprintf(temp, L"%s", cr_command_line.c_str());
-                args.push_back(temp);
+                std::wstring temp = cr_command_line;
+                while (true)
+                {
+                    auto pos = temp.find(L"=");
+                    if (pos == std::wstring::npos)
+                    {
+                        args.push_back(temp);
+                        break;
+                    }
+                    else
+                    {
+                        auto pos1 = temp.rfind(L"--", pos);
+                        auto pos2 = temp.find(L" ", pos);
+                        if (pos1 == std::wstring::npos || pos2 == std::wstring::npos)
+                        {
+                            args.push_back(temp);
+                            break;
+                        }
+                        else
+                        {
+                            args.push_back(temp.substr(pos1, pos2 - pos1));
+                            temp = temp.substr(0, pos1) + temp.substr(pos2);
+                        }
+                    }
+                }
             }
 
             // if (IsNeedPortable())
