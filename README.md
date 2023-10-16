@@ -18,12 +18,12 @@ keep_last_tab=1
 wheel_tab=1
 wheel_tab_when_press_rbutton=1
 [General]
-; Appends Chrome startup parameters
-; You can imitate the form below to write
+; Appends Chromium startup parameters
+; You can imitate the form below to write, pay attention to the space, do not wrap
 ; CommandLine=--no-first-run --disable-logging --no-report-upload
 
-; 追加 Chrome 启动参数
-; 可以模仿下面的形式来写
+; 追加 Chromium 启动参数
+; 可以模仿下面的形式来写，注意空格，不要换行
 ; CommandLine=--no-first-run --disable-logging --no-report-upload
 CommandLine=
 ```
