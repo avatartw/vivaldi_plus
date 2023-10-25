@@ -11,17 +11,43 @@ bool KeepLastTab = false;
 bool WheelTab = false;
 bool WheelTabWhenPressRButton = false;
 
+// 尝试读取 ini 文件
+bool IsIniExist()
+{
+    std::wstring path = GetAppDir() + L"\\config.ini";
+    if (PathFileExists(path.data()))
+    {
+        return true;
+    }
+    return false;
+}
+
 void ParseFeatureFlags()
 {
-    std::wstring configFilePath = GetAppDir() + L"\\config.ini";
-
-    if (PathFileExists(configFilePath.c_str()))
+    if (IsIniExist())
     {
         // Read the config file.
-        EnableDoubleClickCloseTab = GetPrivateProfileIntW(L"features", L"double_click_close_tab", 1, configFilePath.c_str()) == 1;
-        EnableRightClickCloseTab = GetPrivateProfileIntW(L"features", L"right_click_close_tab", 1, configFilePath.c_str()) == 1;
-        KeepLastTab = GetPrivateProfileIntW(L"features", L"keep_last_tab", 1, configFilePath.c_str()) == 1;
-        WheelTab = GetPrivateProfileIntW(L"features", L"wheel_tab", 1, configFilePath.c_str()) == 1;
-        WheelTabWhenPressRButton = GetPrivateProfileIntW(L"features", L"wheel_tab_when_press_rbutton", 1, configFilePath.c_str()) == 1;
+        std::wstring IniPath = GetAppDir() + L"\\config.ini";
+        EnableDoubleClickCloseTab = GetPrivateProfileIntW(L"features", L"double_click_close_tab", 1, IniPath.c_str()) == 1;
+        EnableRightClickCloseTab = GetPrivateProfileIntW(L"features", L"right_click_close_tab", 1, IniPath.c_str()) == 1;
+        KeepLastTab = GetPrivateProfileIntW(L"features", L"keep_last_tab", 1, IniPath.c_str()) == 1;
+        WheelTab = GetPrivateProfileIntW(L"features", L"wheel_tab", 1, IniPath.c_str()) == 1;
+        WheelTabWhenPressRButton = GetPrivateProfileIntW(L"features", L"wheel_tab_when_press_rbutton", 1, IniPath.c_str()) == 1;
+    }
+}
+
+// 如果启用老板键，则读取 ini 文件中的老板键设置；如果 ini 不存在或者该值为空，则返回空字符串
+std::wstring GetBosskey()
+{
+    if (IsIniExist())
+    {
+        std::wstring IniPath = GetAppDir() + L"\\config.ini";
+        TCHAR BosskeyBuffer[100];
+        ::GetPrivateProfileStringW(L"General", L"Bosskey", L"", BosskeyBuffer, 100, IniPath.c_str());
+        return std::wstring(BosskeyBuffer);
+    }
+    else
+    {
+        return std::wstring(L"");
     }
 }

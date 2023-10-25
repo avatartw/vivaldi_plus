@@ -14,6 +14,56 @@ bool IsPressed(int key)
     return key && (::GetKeyState(key) & KEY_PRESSED) != 0;
 }
 
+class SendKeys
+{
+  public:
+    template <typename... T>
+    SendKeys(T... keys)
+    {
+        std::vector<int> keys_ = {keys...};
+        for (auto &key : keys_)
+        {
+            INPUT input = {0};
+            input.type = INPUT_KEYBOARD;
+            input.ki.dwFlags = KEYEVENTF_EXTENDEDKEY;
+            input.ki.wVk = key;
+
+            // 修正鼠标消息
+            switch (key)
+            {
+            case VK_MBUTTON:
+                input.type = INPUT_MOUSE;
+                input.mi.dwFlags = MOUSEEVENTF_MIDDLEDOWN;
+                break;
+            }
+
+            inputs_.push_back(input);
+        }
+
+        SendInput((UINT)inputs_.size(), &inputs_[0], sizeof(INPUT));
+    }
+    ~SendKeys()
+    {
+        for (auto &input : inputs_)
+        {
+            input.ki.dwFlags |= KEYEVENTF_KEYUP;
+
+            // 修正鼠标消息
+            switch (input.ki.wVk)
+            {
+            case VK_MBUTTON:
+                input.mi.dwFlags = MOUSEEVENTF_MIDDLEUP;
+                break;
+            }
+        }
+
+        SendInput((UINT)inputs_.size(), &inputs_[0], sizeof(INPUT));
+    }
+
+  private:
+    std::vector<INPUT> inputs_;
+};
+
 long GetAccessibleRole(NodePtr node)
 {
     VARIANT self;
@@ -312,7 +362,7 @@ bool IsOnlyOneTab(NodePtr top)
 }
 
 // 滑鼠是否在標籤欄上
-bool IsOnTheTab(NodePtr top, POINT pt)
+bool IsOnTheTabBar(NodePtr top, POINT pt)
 {
     bool flag = false;
     NodePtr PageTabList = FindPageTabList(top);
@@ -327,7 +377,7 @@ bool IsOnTheTab(NodePtr top, POINT pt)
     }
     else
     {
-        // if (top) DebugLog(L"IsOnTheTab failed");
+        // if (top) DebugLog(L"IsOnTheTabBar failed");
     }
     return flag;
 }
@@ -385,7 +435,7 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam)
             int zDelta = GET_WHEEL_DELTA_WPARAM(pwheel->mouseData);
 
             // 是否啟用滑鼠停留在標籤欄時滾輪切換標籤
-            if (WheelTab && IsOnTheTab(TopContainerView, pmouse->pt))
+            if (WheelTab && IsOnTheTabBar(TopContainerView, pmouse->pt))
             {
                 hwnd = GetTopWnd(hwnd);
                 if (zDelta > 0)
@@ -427,7 +477,7 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam)
             }
         }
 
-        if ((EnableDoubleClickCloseTab && wParam == WM_LBUTTONDBLCLK) || (EnableRightClickCloseTab && wParam == WM_RBUTTONUP && !IsPressed(VK_SHIFT)))
+        if (EnableDoubleClickCloseTab && wParam == WM_LBUTTONDBLCLK)
         {
             HWND hwnd = WindowFromPoint(pmouse->pt);
             NodePtr TopContainerView = GetTopContainerView(hwnd);
@@ -439,7 +489,7 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam)
             {
             }
 
-            // 雙擊 或 右鍵 關閉
+            // 雙擊關閉
             if (isOnOneTab)
             {
                 if (isOnlyOneTab)
@@ -453,6 +503,45 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam)
                 else
                 {
                     ExecuteCommand(IDC_CLOSE_TAB);
+                }
+            }
+        }
+
+        if (EnableRightClickCloseTab && wParam == WM_RBUTTONUP && !IsPressed(VK_SHIFT))
+
+        {
+            HWND hwnd = WindowFromPoint(pmouse->pt);
+            NodePtr TopContainerView = GetTopContainerView(hwnd);
+
+            // 吞掉原来的鼠标消息
+            SendOneMouse(MOUSEEVENTF_LEFTDOWN);
+            SendOneMouse(MOUSEEVENTF_LEFTUP);
+            std::thread th([]() {
+                Sleep(500);
+            });
+            th.detach();
+
+            bool isOnOneTab = IsOnOneTab(TopContainerView, pmouse->pt);
+            bool isOnlyOneTab = IsOnlyOneTab(TopContainerView);
+
+            if (TopContainerView)
+            {
+            }
+
+            // 右键关闭
+            if (isOnOneTab)
+            {
+                if (isOnlyOneTab)
+                {
+                    // DebugLog(L"keep_tab");
+                    // ExecuteCommand(IDC_NEW_TAB, hwnd);
+                    ExecuteCommand(IDC_NEW_TAB);
+                    ExecuteCommand(IDC_SELECT_PREVIOUS_TAB);
+                    ExecuteCommand(IDC_CLOSE_TAB);
+                }
+                else
+                {
+                    SendKeys(VK_MBUTTON);
                 }
             }
         }
