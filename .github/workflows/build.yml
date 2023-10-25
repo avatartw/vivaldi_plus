@@ -22,7 +22,7 @@ jobs:
 
     steps:
     - name: checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@main
       with:
         submodules: 'true'
 
@@ -31,7 +31,7 @@ jobs:
       run: nuget install VC-LTL
 
     - name: setup xmake
-      uses: xmake-io/github-action-setup-xmake@v1
+      uses: xmake-io/github-action-setup-xmake@master
 
     - name: configure
       run: xmake f -a ${{ matrix.arch }}
@@ -40,7 +40,7 @@ jobs:
       run: xmake
 
     - name: upload
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@main
       with:
         name: ${{ matrix.name }}
         path: build/release
