@@ -52,4 +52,5 @@ dll放入解压版Vivaldi目录(vivaldi.exe同目录)即可
 [chromePlus](https://github.com/icy37785/chrome_plus)
 
 > 修复 Chrome 118+ 的代码参考了 [Bush2021的项目](https://github.com/Bush2021/chrome_plus)，在此表示感谢。我不会cpp，所以代码写的很烂。版本号更新频繁，看不惯的可以不看。
+
 > 右键关闭标签页、老板键、自定义启动参数 的代码源自 [Bush2021的项目](https://github.com/Bush2021/chrome_plus)，在此表示感谢。
