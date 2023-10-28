@@ -88,15 +88,15 @@ std::wstring GetAppDir()
 
 void DebugLog(const wchar_t *format, ...)
 {
-    va_list args;
-
-    va_start(args, format);
-    auto str = Format(format, args);
-    va_end(args);
-
-    str = Format(L"[vivaldi++]%s\n", str.c_str());
-
-    OutputDebugStringW(str.c_str());
+//    va_list args;
+//
+//    va_start(args, format);
+//    auto str = Format(format, args);
+//    va_end(args);
+//
+//    str = Format(L"[vivaldi++]%s\n", str.c_str());
+//
+//    OutputDebugStringW(str.c_str());
 }
 
 // https://source.chromium.org/chromium/chromium/src/+/main:chrome/app/chrome_command_ids.h?q=chrome_command_ids.h&ss=chromium%2Fchromium%2Fsrc
