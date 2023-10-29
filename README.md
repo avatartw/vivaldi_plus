@@ -4,11 +4,11 @@
 - 保留最后标签页（防止关闭最后一个标签页时关闭浏览器，点X不行）
 - 鼠标悬停标签栏滚动
 - 按住右键时滚轮滚动标签栏
+- 新建前台标签页打开地址栏输入的内容
 - 使用快捷键快速隐藏浏览器窗口（老板键）
 - 便携设计，程序放在App目录，数据放在Data目录（不兼容原版数据，可以重装系统换电脑不丢数据）
 - 可以使用 ini 文件配置功能
 - 可以自定义启动参数
-- 移除更新错误警告（因为是绿色版没有自动更新功能）
 # 自定义
 本dll提供有限的自定义选项（dll版本需要为1.5.7.0 +），新建一个名为config.ini的文件到dll同目录即可。可以使用%app%来表示dll所在目录
 ```
@@ -21,6 +21,7 @@ right_click_close_tab=0
 keep_last_tab=1
 wheel_tab=1
 wheel_tab_when_press_rbutton=1
+open_url_new_tab=0
 [General]
 ; Appends Chromium startup parameters
 ; You can imitate the form below to write, pay attention to the space, do not wrap
@@ -53,4 +54,4 @@ dll放入解压版Vivaldi目录(vivaldi.exe同目录)即可
 
 > 修复 Chrome 118+ 的代码参考了 [Bush2021的项目](https://github.com/Bush2021/chrome_plus)，在此表示感谢。我不会cpp，所以代码写的很烂。版本号更新频繁，看不惯的可以不看。
 
-> 右键关闭标签页、老板键、自定义启动参数 的代码源自 [Bush2021的项目](https://github.com/Bush2021/chrome_plus)，在此表示感谢。
+> 右键关闭标签页、老板键、自定义启动参数、新建前台标签页打开地址栏输入的内容 的代码源自 [Bush2021的项目](https://github.com/Bush2021/chrome_plus)，在此表示感谢。
