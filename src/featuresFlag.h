@@ -11,6 +11,8 @@ bool KeepLastTab = false;
 bool WheelTab = false;
 bool WheelTabWhenPressRButton = false;
 bool IsOpenUrlNewTab = false;
+bool IsBookmarkNewTab = false;
+bool IsNewTabDisable = false;
 
 // 尝试读取 ini 文件
 bool IsIniExist()
@@ -35,6 +37,8 @@ void ParseFeatureFlags()
         WheelTab = GetPrivateProfileIntW(L"features", L"wheel_tab", 1, IniPath.c_str()) == 1;
         WheelTabWhenPressRButton = GetPrivateProfileIntW(L"features", L"wheel_tab_when_press_rbutton", 1, IniPath.c_str()) == 1;
         IsOpenUrlNewTab = GetPrivateProfileIntW(L"features", L"open_url_new_tab", 1, IniPath.c_str()) == 1;
+        IsBookmarkNewTab = GetPrivateProfileIntW(L"features", L"open_bookmark_new_tab", 1, IniPath.c_str()) == 1;
+        IsNewTabDisable = GetPrivateProfileIntW(L"features", L"new_tab_disable", 1, IniPath.c_str()) == 1;
     }
 }
 
