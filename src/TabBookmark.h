@@ -76,7 +76,6 @@ void GetAccessibleName(NodePtr node, Function f)
     {
         f(bstr);
         SysFreeString(bstr);
-        DebugLog(L"GetAccessibleName succeeded");
     }
     else
     {
@@ -208,8 +207,7 @@ NodePtr FindPageTabList(NodePtr node)
     if (node)
     {
         TraversalAccessible(node, [&](NodePtr child) {
-            long role = GetAccessibleRole(child);
-            if (role == ROLE_SYSTEM_PAGETABLIST)
+            if (auto role = GetAccessibleRole(child); role == ROLE_SYSTEM_PAGETABLIST)
             {
                 PageTabList = child;
             }
@@ -229,8 +227,7 @@ NodePtr FindPageTab(NodePtr node)
     if (node)
     {
         TraversalAccessible(node, [&](NodePtr child) {
-            long role = GetAccessibleRole(child);
-            if (role == ROLE_SYSTEM_PAGETAB)
+            if (auto role = GetAccessibleRole(child); role == ROLE_SYSTEM_PAGETAB)
             {
                 PageTab = child;
             }
@@ -250,8 +247,7 @@ NodePtr FindToolBar(NodePtr node)
     if (node)
     {
         TraversalAccessible(node, [&](NodePtr child) {
-            long role = GetAccessibleRole(child);
-            if (role == ROLE_SYSTEM_TOOLBAR)
+            if (auto role = GetAccessibleRole(child); role == ROLE_SYSTEM_TOOLBAR)
             {
                 ToolBar = child;
             }
@@ -271,8 +267,7 @@ NodePtr FindPushButton(NodePtr node)
     if (node)
     {
         TraversalAccessible(node, [&](NodePtr child) {
-            long role = GetAccessibleRole(child);
-            if (role == ROLE_SYSTEM_PUSHBUTTON)
+            if (auto role = GetAccessibleRole(child); role == ROLE_SYSTEM_PUSHBUTTON)
             {
                 PushButton = child;
             }
@@ -292,8 +287,7 @@ NodePtr FindMenuBar(NodePtr node)
     if (node)
     {
         TraversalAccessible(node, [&](NodePtr child) {
-            long role = GetAccessibleRole(child);
-            if (role == ROLE_SYSTEM_MENUBAR)
+            if (auto role = GetAccessibleRole(child); role == ROLE_SYSTEM_MENUBAR)
             {
                 MenuBar = child;
             }
@@ -313,8 +307,7 @@ NodePtr FindMenuItem(NodePtr node)
     if (node)
     {
         TraversalAccessible(node, [&](NodePtr child) {
-            long role = GetAccessibleRole(child);
-            if (role == ROLE_SYSTEM_MENUITEM)
+            if (auto role = GetAccessibleRole(child); role == ROLE_SYSTEM_MENUITEM)
             {
                 MenuItem = child;
             }
@@ -364,18 +357,6 @@ NodePtr GetTopContainerView(HWND hwnd)
         }
     }
     return TopContainerView;
-}
-
-NodePtr GetBrowserView(HWND hwnd)
-{
-    NodePtr BrowserView = nullptr;
-    NodePtr TopContainerView = GetTopContainerView(hwnd);
-    if (TopContainerView)
-    {
-        BrowserView = GetParentElement(TopContainerView);
-        DebugLog(L"BrowserViewRole: %x", GetAccessibleRole(BrowserView));
-    }
-    return BrowserView;
 }
 
 NodePtr GetMenuBarPane(HWND hwnd)
@@ -429,8 +410,7 @@ NodePtr FindOmniboxEdit(NodePtr node)
     if (node)
     {
         TraversalAccessible(node, [&](NodePtr child) {
-            long role = GetAccessibleRole(child);
-            if (role == ROLE_SYSTEM_TEXT)
+            if (auto role = GetAccessibleRole(child); role == ROLE_SYSTEM_TEXT)
             {
                 OmniboxEdit = child;
             }
@@ -454,15 +434,8 @@ void GetAccessibleSize(NodePtr node, Function f)
     RECT rect;
     if (S_OK == node->accLocation(&rect.left, &rect.top, &rect.right, &rect.bottom, self))
     {
-        // rect.left = (int)((float)rect.left);
-        // rect.top = (int)((float)rect.top);
-        // rect.right = (int)((float)rect.right);
-        // rect.bottom = (int)((float)rect.bottom);
-
-        rect.right += rect.left;
-        rect.bottom += rect.top;
-
-        f(rect);
+        auto [left, top, right, bottom] = rect;
+        f({left, top, right + left, bottom + top});
     }
 }
 
