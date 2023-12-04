@@ -23,8 +23,8 @@ cache=%app%\..\Cache
 ; keep_last_tab                -- Keep the last TAB from closing the window (except for manually clicking the close button)
 ; wheel_tab                    -- Use the mouse wheel to switch TAB when the mouse is on the TAB bar
 ; wheel_tab_when_press_rbutton -- Use the mouse wheel to switch TAB when the right mouse button is pressed anywhere (if you use mouse gesture software, it will not take effect)
-; open_url_new_tab             -- New foreground tab opens the contents entered in address bar
-; open_bookmark_new_tab        -- New foreground tab opens the bookmark
+; open_url_new_tab             -- Open new foreground tab to opens the contents entered in address bar
+; open_bookmark_new_tab        -- Open bew foreground tab to opens bookmarks
 ; new_tab_disable              -- If the current TAB is a new TAB, disable the above two options
 
 ; double_click_close_tab       -- 双击左键关闭标签页
