@@ -624,13 +624,15 @@ bool IsOnBookmark(NodePtr top, POINT pt)
                         GetAccessibleDescription(child, [&flag](BSTR bstr) {
                             if (bstr)
                             {
-                                if (wcsstr(bstr, L".") != NULL)
+                                if (wcsstr(bstr, L".") != NULL && wcsstr(bstr, L"javascript:") != bstr)
                                 {
-                                    if (wcsstr(bstr, L"javascript:") != bstr)
-                                    {
-                                        DebugLog(L"OnBookmark");
-                                        flag = true;
-                                    }
+                                    DebugLog(L"OnBookmark");
+                                    flag = true;
+                                }
+                                if (wcsstr(bstr, L":") != NULL && wcsstr(bstr, L"javascript:") != bstr)
+                                {
+                                    DebugLog(L"OnBookmark");
+                                    flag = true;
                                 }
                             }
                         });
@@ -671,13 +673,15 @@ bool IsOnOneMenuBookmark(NodePtr top, POINT pt)
                                 GetAccessibleDescription(child, [&flag](BSTR bstr) {
                                     if (bstr)
                                     {
-                                        if (wcsstr(bstr, L".") != NULL)
+                                        if (wcsstr(bstr, L".") != NULL && wcsstr(bstr, L"javascript:") != bstr)
                                         {
-                                            if (wcsstr(bstr, L"javascript:") != bstr)
-                                            {
-                                                DebugLog(L"OnBookmark");
-                                                flag = true;
-                                            }
+                                            DebugLog(L"OnBookmark");
+                                            flag = true;
+                                        }
+                                        if (wcsstr(bstr, L":") != NULL && wcsstr(bstr, L"javascript:") != bstr)
+                                        {
+                                            DebugLog(L"OnBookmark");
+                                            flag = true;
                                         }
                                     }
                                 });
