@@ -2,8 +2,8 @@
 - 双击关闭标签页
 - 右键关闭标签页（按住 Shift 弹出原有菜单）
 - 保留最后标签页（防止关闭最后一个标签页时关闭浏览器，点X不行）
-- 鼠标悬停标签栏滚动
-- 按住右键时滚轮滚动标签栏
+- 鼠标悬停标签栏时使用滚轮切换标签页
+- 按住右键时使用滚轮切换标签页
 - 新建前台标签页打开地址栏输入的内容
 - 新建前台标签页打开书签
 - 当前为新标签页时，可以禁用上面两个功能
@@ -18,14 +18,14 @@
 data=%app%\..\Data
 cache=%app%\..\Cache
 
-; double_click_close_tab       -- Double left click to close the TAB
-; right_click_close_tab        -- Right click to close the TAB (pop up the original menu when the Shift key is pressed)
-; keep_last_tab                -- Keep the last TAB from closing the window (except for manually clicking the close button)
-; wheel_tab                    -- Use the mouse wheel to switch TAB when the mouse is on the TAB bar
-; wheel_tab_when_press_rbutton -- Use the mouse wheel to switch TAB when the right mouse button is pressed anywhere (if you use mouse gesture software, it will not take effect)
+; double_click_close_tab       -- Double left click to close the tab
+; right_click_close_tab        -- Right click to close the tab (pop up the original menu when the Shift key is pressed)
+; keep_last_tab                -- Keep the last tab from closing the window (except for manually clicking the close button)
+; wheel_tab                    -- Use the mouse wheel to switch tab when the mouse is on the tab bar
+; wheel_tab_when_press_rbutton -- Use the mouse wheel to switch tab when the right mouse button is pressed anywhere (if you use mouse gesture software, it will not take effect)
 ; open_url_new_tab             -- Open new foreground tab to opens the contents entered in address bar
 ; open_bookmark_new_tab        -- Open bew foreground tab to opens bookmarks
-; new_tab_disable              -- If the current TAB is a new TAB, disable the above two options
+; new_tab_disable              -- If the current tab is a new tab, disable the above two options
 
 ; double_click_close_tab       -- 双击左键关闭标签页
 ; right_click_close_tab        -- 右键关闭标签页（按 Shift 键时弹出原有菜单）
