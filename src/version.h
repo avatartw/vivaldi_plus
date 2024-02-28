@@ -3,7 +3,7 @@
 
 #define RELEASE_VER_MAIN 1
 #define RELEASE_VER_SUB 8
-#define RELEASE_VER_FIX 0
+#define RELEASE_VER_FIX 1
 #define RELEASE_VER_PATCH 0
 
 #define TOSTRING2(arg) #arg
