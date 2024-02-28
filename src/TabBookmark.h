@@ -11,55 +11,187 @@ bool IsPressed(int key)
     return key && (::GetKeyState(key) & KEY_PRESSED) != 0;
 }
 
-class SendKeys
+// 滾輪切換標籤頁
+bool handleMouseWheel(WPARAM wParam, LPARAM lParam, PMOUSEHOOKSTRUCT pmouse)
 {
-  public:
-    template <typename... T>
-    SendKeys(T... keys)
+    if (wParam != WM_MOUSEWHEEL)
     {
-        std::vector<int> keys_ = {keys...};
-        for (auto &key : keys_)
-        {
-            INPUT input = {0};
-            input.type = INPUT_KEYBOARD;
-            input.ki.dwFlags = KEYEVENTF_EXTENDEDKEY;
-            input.ki.wVk = key;
-
-            // 修正鼠标消息
-            switch (key)
-            {
-            case VK_MBUTTON:
-                input.type = INPUT_MOUSE;
-                input.mi.dwFlags = MOUSEEVENTF_MIDDLEDOWN;
-                break;
-            }
-
-            inputs_.push_back(input);
-        }
-
-        SendInput((UINT)inputs_.size(), &inputs_[0], sizeof(INPUT));
-    }
-    ~SendKeys()
-    {
-        for (auto &input : inputs_)
-        {
-            input.ki.dwFlags |= KEYEVENTF_KEYUP;
-
-            // 修正鼠标消息
-            switch (input.ki.wVk)
-            {
-            case VK_MBUTTON:
-                input.mi.dwFlags = MOUSEEVENTF_MIDDLEUP;
-                break;
-            }
-        }
-
-        SendInput((UINT)inputs_.size(), &inputs_[0], sizeof(INPUT));
+        return false;
     }
 
-  private:
-    std::vector<INPUT> inputs_;
-};
+    HWND hwnd = WindowFromPoint(pmouse->pt);
+    NodePtr TopContainerView = GetTopContainerView(hwnd);
+
+    PMOUSEHOOKSTRUCTEX pwheel = (PMOUSEHOOKSTRUCTEX)lParam;
+    int zDelta = GET_WHEEL_DELTA_WPARAM(pwheel->mouseData);
+
+    // 是否啟用滑鼠停留在標籤欄時滾輪切換標籤
+    if (WheelTab && IsOnTheTabBar(TopContainerView, pmouse->pt))
+    {
+        hwnd = GetTopWnd(hwnd);
+        if (zDelta > 0)
+        {
+            ExecuteCommand(IDC_SELECT_PREVIOUS_TAB, hwnd);
+        }
+        else
+        {
+            ExecuteCommand(IDC_SELECT_NEXT_TAB, hwnd);
+        }
+        return true;
+    }
+
+    // 是否啟用在任何位置按住右鍵時滾輪切換標籤
+    if (WheelTabWhenPressRButton && IsPressed(VK_RBUTTON))
+    {
+        hwnd = GetTopWnd(hwnd);
+        if (zDelta > 0)
+        {
+            ExecuteCommand(IDC_SELECT_PREVIOUS_TAB, hwnd);
+        }
+        else
+        {
+            ExecuteCommand(IDC_SELECT_NEXT_TAB, hwnd);
+        }
+        return true;
+    }
+
+    return false;
+}
+
+// 雙擊關閉標籤頁
+bool handleDblClk(WPARAM wParam, LPARAM lParam, PMOUSEHOOKSTRUCT pmouse)
+{
+    if (wParam != WM_LBUTTONDBLCLK || !EnableDoubleClickCloseTab)
+    {
+        return false;
+    }
+
+    HWND hwnd = WindowFromPoint(pmouse->pt);
+    NodePtr TopContainerView = GetTopContainerView(hwnd);
+
+    bool isOnOneTab = IsOnOneTab(TopContainerView, pmouse->pt);
+    bool isOnlyOneTab = IsOnlyOneTab(TopContainerView);
+
+    if (isOnOneTab)
+    {
+        if (isOnlyOneTab)
+        {
+            ExecuteCommand(IDC_NEW_TAB);
+            ExecuteCommand(IDC_SELECT_PREVIOUS_TAB);
+            ExecuteCommand(IDC_CLOSE_TAB);
+        }
+        else
+        {
+            ExecuteCommand(IDC_CLOSE_TAB);
+        }
+        return true;
+    }
+
+    return false;
+}
+
+// 右鍵關閉標籤頁
+bool handleRightClick(WPARAM wParam, LPARAM lParam, PMOUSEHOOKSTRUCT pmouse)
+{
+    if (wParam != WM_RBUTTONUP || IsPressed(VK_SHIFT) || !EnableRightClickCloseTab)
+    {
+        return false;
+    }
+
+    HWND hwnd = WindowFromPoint(pmouse->pt);
+    NodePtr TopContainerView = GetTopContainerView(hwnd);
+
+    bool isOnOneTab = IsOnOneTab(TopContainerView, pmouse->pt);
+    bool isOnlyOneTab = IsOnlyOneTab(TopContainerView);
+
+    if (isOnOneTab)
+    {
+        if (isOnlyOneTab)
+        {
+            ExecuteCommand(IDC_NEW_TAB);
+            ExecuteCommand(IDC_SELECT_PREVIOUS_TAB);
+            ExecuteCommand(IDC_CLOSE_TAB);
+        }
+        else
+        {
+            SendKeys(VK_MBUTTON);
+        }
+        return true;
+    }
+
+    return false;
+}
+
+// 保留最後標籤頁 - 中鍵
+bool handleMiddleClick(WPARAM wParam, LPARAM lParam, PMOUSEHOOKSTRUCT pmouse)
+{
+    if (wParam != WM_MBUTTONUP)
+    {
+        return false;
+    }
+
+    HWND hwnd = WindowFromPoint(pmouse->pt);
+    NodePtr TopContainerView = GetTopContainerView(hwnd);
+
+    bool isOnOneTab = IsOnOneTab(TopContainerView, pmouse->pt);
+    bool isOnlyOneTab = IsOnlyOneTab(TopContainerView);
+
+    if (isOnOneTab && isOnlyOneTab)
+    {
+        ExecuteCommand(IDC_NEW_TAB);
+        return true;
+    }
+
+    return false;
+}
+
+// 新標籤頁打開書籤
+bool handleBookmark(WPARAM wParam, LPARAM lParam, PMOUSEHOOKSTRUCT pmouse)
+{
+    if (wParam != WM_LBUTTONUP || IsPressed(VK_CONTROL) || IsPressed(VK_SHIFT) || IsBookmarkNewTab)
+    {
+        return false;
+    }
+
+    HWND hwnd = WindowFromPoint(pmouse->pt);
+    NodePtr TopContainerView = GetTopContainerView(hwnd);
+
+    bool isOnBookmark = IsOnBookmark(TopContainerView, pmouse->pt);
+    bool isOnNewTab = IsOnNewTab(TopContainerView);
+
+    if (TopContainerView && isOnBookmark && !isOnNewTab)
+    {
+        SendKeys(VK_MBUTTON, VK_SHIFT);
+        return true;
+    }
+
+    return false;
+}
+
+// 新標籤頁打開書籤資料夾中的書籤
+bool handleBookmarkMenu(WPARAM wParam, LPARAM lParam, PMOUSEHOOKSTRUCT pmouse)
+{
+    if (wParam != WM_LBUTTONUP || IsPressed(VK_CONTROL) || IsPressed(VK_SHIFT) || !IsBookmarkNewTab)
+    {
+        return false;
+    }
+
+    HWND hwnd_p = WindowFromPoint(pmouse->pt);
+    HWND hwnd_k = GetFocus();
+    NodePtr TopContainerView = GetTopContainerView(hwnd_k);
+    NodePtr MenuBarPane = GetMenuBarPane(hwnd_p);
+
+    bool isOnMenuBookmark = IsOnMenuBookmark(MenuBarPane, pmouse->pt);
+    bool isOnNewTab = IsOnNewTab(TopContainerView);
+
+    if (TopContainerView && MenuBarPane && isOnMenuBookmark && !isOnNewTab)
+    {
+        SendKeys(VK_MBUTTON, VK_SHIFT);
+        return true;
+    }
+
+    return false;
+}
 
 LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
@@ -105,173 +237,31 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam)
         //     return 1;
         // }
 
-        if (wParam == WM_MOUSEWHEEL)
+        if (handleMouseWheel(wParam, lParam, pmouse))
         {
-            HWND hwnd = WindowFromPoint(pmouse->pt);
-            NodePtr TopContainerView = GetTopContainerView(hwnd);
-
-            PMOUSEHOOKSTRUCTEX pwheel = (PMOUSEHOOKSTRUCTEX)lParam;
-            int zDelta = GET_WHEEL_DELTA_WPARAM(pwheel->mouseData);
-
-            // 是否啟用滑鼠停留在標籤欄時滾輪切換標籤
-            if (WheelTab && IsOnTheTabBar(TopContainerView, pmouse->pt))
-            {
-                hwnd = GetTopWnd(hwnd);
-                if (zDelta > 0)
-                {
-                    ExecuteCommand(IDC_SELECT_PREVIOUS_TAB, hwnd);
-                }
-                else
-                {
-                    ExecuteCommand(IDC_SELECT_NEXT_TAB, hwnd);
-                }
-
-                wheel_tab_ing = true;
-                if (TopContainerView)
-                {
-                }
-                // DebugLog(L"WM_MOUSEWHEEL");
-                return 1;
-            }
- 
-            // 是否啟用在任何位置按住右鍵時滾輪切換標籤
-            if (WheelTabWhenPressRButton && IsPressed(VK_RBUTTON))
-            {
-                hwnd = GetTopWnd(hwnd);
-                if (zDelta > 0)
-                {
-                    ExecuteCommand(IDC_SELECT_PREVIOUS_TAB, hwnd);
-                }
-                else
-                {
-                    ExecuteCommand(IDC_SELECT_NEXT_TAB, hwnd);
-                }
-
-                wheel_tab_ing = true;
-                if (TopContainerView)
-                {
-                }
-                // DebugLog(L"WM_MOUSEWHEEL");
-                return 1;
-            }
+            return 1;
         }
 
-        if (EnableDoubleClickCloseTab && wParam == WM_LBUTTONDBLCLK)
+        if (handleDblClk(wParam, lParam, pmouse))
         {
-            HWND hwnd = WindowFromPoint(pmouse->pt);
-            NodePtr TopContainerView = GetTopContainerView(hwnd);
-
-            bool isOnOneTab = IsOnOneTab(TopContainerView, pmouse->pt);
-            bool isOnlyOneTab = IsOnlyOneTab(TopContainerView);
-
-            if (TopContainerView)
-            {
-            }
-
-            // 雙擊關閉
-            if (isOnOneTab)
-            {
-                if (isOnlyOneTab)
-                {
-                    // DebugLog(L"keep_tab");
-                    // ExecuteCommand(IDC_NEW_TAB, hwnd);
-                    ExecuteCommand(IDC_NEW_TAB);
-                    ExecuteCommand(IDC_SELECT_PREVIOUS_TAB);
-                    ExecuteCommand(IDC_CLOSE_TAB);
-                }
-                else
-                {
-                    ExecuteCommand(IDC_CLOSE_TAB);
-                }
-            }
         }
 
-        if (EnableRightClickCloseTab && wParam == WM_RBUTTONUP && !IsPressed(VK_SHIFT))
-
+        if (handleRightClick(wParam, lParam, pmouse))
         {
-            HWND hwnd = WindowFromPoint(pmouse->pt);
-            NodePtr TopContainerView = GetTopContainerView(hwnd);
-
-            bool isOnOneTab = IsOnOneTab(TopContainerView, pmouse->pt);
-            bool isOnlyOneTab = IsOnlyOneTab(TopContainerView);
-
-            if (TopContainerView)
-            {
-            }
-
-            // 右键关闭
-            if (isOnOneTab)
-            {
-                if (isOnlyOneTab)
-                {
-                    // DebugLog(L"keep_tab");
-                    // ExecuteCommand(IDC_NEW_TAB, hwnd);
-                    ExecuteCommand(IDC_NEW_TAB);
-                    ExecuteCommand(IDC_SELECT_PREVIOUS_TAB);
-                    ExecuteCommand(IDC_CLOSE_TAB);
-                    return 1;
-                }
-                else
-                {
-                    SendKeys(VK_MBUTTON);
-                    return 1;
-                }
-            }
+            return 1;
         }
 
-        if (wParam == WM_MBUTTONUP)
+        if (handleMiddleClick(wParam, lParam, pmouse))
         {
-            HWND hwnd = WindowFromPoint(pmouse->pt);
-            NodePtr TopContainerView = GetTopContainerView(hwnd);
-
-            bool isOnOneTab = IsOnOneTab(TopContainerView, pmouse->pt);
-            bool isOnlyOneTab = IsOnlyOneTab(TopContainerView);
-
-            if (TopContainerView)
-            {
-            }
-
-            if (isOnOneTab && isOnlyOneTab)
-            {
-                // DebugLog(L"keep_tab");
-                // ExecuteCommand(IDC_NEW_TAB, hwnd);
-                ExecuteCommand(IDC_NEW_TAB);
-                // ExecuteCommand(IDC_SELECT_PREVIOUS_TAB);
-                // ExecuteCommand(IDC_CLOSE_TAB);
-            }
         }
 
-        if (IsBookmarkNewTab && wParam == WM_LBUTTONUP && !IsPressed(VK_CONTROL) && !IsPressed(VK_SHIFT))
+        if (handleBookmark(wParam, lParam, pmouse))
         {
-            HWND hwnd = WindowFromPoint(pmouse->pt);
-            NodePtr TopContainerView = GetTopContainerView(hwnd);
-
-            bool isOnBookmark = IsOnBookmark(TopContainerView, pmouse->pt);
-            bool isOnNewTab = IsOnNewTab(TopContainerView);
-
-            if (!isOnNewTab && TopContainerView && isOnBookmark)
-            {
-                DebugLog(L"isOnBookmark: = Shift+MButton");
-                SendKeys(VK_MBUTTON, VK_SHIFT);
-                return 1;
-            }
+            return 1;
         }
-        if (IsBookmarkNewTab && wParam == WM_LBUTTONUP && !IsPressed(VK_CONTROL) && !IsPressed(VK_SHIFT))
+        if (handleBookmarkMenu(wParam, lParam, pmouse))
         {
-            HWND hwnd_p = WindowFromPoint(pmouse->pt);
-            HWND hwnd_k = GetFocus();
-            NodePtr TopContainerView = GetTopContainerView(hwnd_k);
-            NodePtr MenuBarPane = GetMenuBarPane(hwnd_p);
-
-            bool isOnOneMenuBookmark = IsOnOneMenuBookmark(MenuBarPane, pmouse->pt);
-            bool isOnNewTab = IsOnNewTab(TopContainerView);
-
-            if (!isOnNewTab && MenuBarPane && isOnOneMenuBookmark)
-            {
-                DebugLog(L"isOnOneMenuBookmark: = Shift+MButton");
-                SendKeys(VK_MBUTTON, VK_SHIFT);
-                return 1;
-            }
+            return 1;
         }
     }
 next:
