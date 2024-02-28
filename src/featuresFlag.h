@@ -57,3 +57,19 @@ std::wstring GetBosskey()
         return std::wstring(L"");
     }
 }
+
+// 定义翻译快捷键
+std::wstring GetTranslateKey()
+{
+    if (IsIniExist())
+    {
+        std::wstring IniPath = GetAppDir() + L"\\chrome++.ini";
+        TCHAR TranslateKeyBuffer[100];
+        ::GetPrivateProfileStringW(L"General", L"TranslateKey", L"", TranslateKeyBuffer, 100, IniPath.c_str());
+        return std::wstring(TranslateKeyBuffer);
+    }
+    else
+    {
+        return std::wstring(L"");
+    }
+}
