@@ -1,3 +1,6 @@
+#ifndef UTILS_H_
+#define UTILS_H_
+
 #include <map>
 #include <string>
 #include <vector>
@@ -421,3 +424,5 @@ bool ReplaceStringInPlace(std::string &subject, const std::string &search, const
 //     }
 //     return false;
 // }
+
+#endif // UTILS_H_

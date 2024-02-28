@@ -1,3 +1,6 @@
+#ifndef FEATURESFLAG_H_
+#define FEATURESFLAG_H_
+
 //
 // Created by czyt on 2023/10/12.
 //
@@ -73,3 +76,5 @@ std::wstring GetTranslateKey()
         return std::wstring(L"");
     }
 }
+
+#endif // FEATURESFLAG_H_
