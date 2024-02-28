@@ -446,6 +446,12 @@ bool IsOnlyOneTab(NodePtr top)
                         {
                             tab_count++;
                         }
+                        if ((GetAccessibleRole(child) == ROLE_SYSTEM_PAGETABLIST)
+                            && (GetAccessibleState(child) & STATE_SYSTEM_COLLAPSED))
+                            // 判斷是否存在摺疊的標籤組
+                        {
+                            tab_count++;
+                        }
                         return false;
                     });
                 }
