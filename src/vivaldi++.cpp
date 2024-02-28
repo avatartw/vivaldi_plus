@@ -14,7 +14,7 @@ HMODULE hInstance;
 #include "patch.h"
 #include "featuresFlag.h"
 #include "TabBookmark.h"
-#include "Bosskey.h"
+#include "hotkey.h"
 #include "portable.h"
 #include "PakPatch.h"
 #include "appid.h"
@@ -40,8 +40,8 @@ void VivaldiPlus()
     // 给pak文件打补丁
     PakPatch();
 
-    // 老板键
-    Bosskey();
+    // 處理熱鍵
+    GetHotkey();
 }
 
 void VivaldiPlusCommand(LPWSTR param)
