@@ -16,7 +16,7 @@ void GetAccessibleName(NodePtr node, Function f)
     self.vt = VT_I4;
     self.lVal = CHILDID_SELF;
 
-    BSTR bstr = NULL;
+    BSTR bstr = nullptr;
     if (S_OK == node->get_accName(self, &bstr))
     {
         f(bstr);
@@ -35,7 +35,7 @@ void GetAccessibleDescription(NodePtr node, Function f)
     self.vt = VT_I4;
     self.lVal = CHILDID_SELF;
 
-    BSTR bstr = NULL;
+    BSTR bstr = nullptr;
     if (S_OK == node->get_accDescription(self, &bstr))
     {
         f(bstr);
@@ -498,7 +498,7 @@ bool IsOnNewTab(NodePtr top)
     else
     {
         bool flag = false;
-        wchar_t *new_tab_name = NULL;
+        std::unique_ptr<wchar_t, decltype(&free)> new_tab_name(nullptr, free);
         NodePtr PageTabList = FindPageTabList(top);
         if (PageTabList)
         {
@@ -541,7 +541,6 @@ bool IsOnNewTab(NodePtr top)
                                 }
                             return false;
                         });
-                        free(new_tab_name);
                     }
                 }
             }

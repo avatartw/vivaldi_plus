@@ -121,7 +121,7 @@ std::wstring GetCrCommandLine()
     if (IsCustomIniExist())
     {
         std::wstring IniPath = GetAppDir() + L"\\config.ini";
-        std::vector<TCHAR> CommandLineBuffer(1024); // 初始大小為 1024
+        std::vector<TCHAR> CommandLineBuffer(64); // 初始大小為 1024
         DWORD bytesRead = ::GetPrivateProfileStringW(L"General", L"CommandLine", L"", CommandLineBuffer.data(), CommandLineBuffer.size(), IniPath.c_str());
 
         // 如果讀取的字符數接近緩衝區的大小，可能需要更大的緩衝區
@@ -154,14 +154,8 @@ std::wstring GetCommand(LPWSTR param)
     LPWSTR *argv = CommandLineToArgvW(param, &argc);
 
     int insert_pos = 0;
-    for (int i = 0; i < argc; i++)
-    {
-        if (wcscmp(argv[i], L"--") == 0)
-        {
-            break;
-        }
-        if (wcscmp(argv[i], L"--single-argument") == 0)
-        {
+    for (int i = 0; i < argc; i++) {
+        if (std::wstring(argv[i]).find(L"--") != std::wstring::npos || std::wstring(argv[i]).find(L"--single-argument") != std::wstring::npos) {
             break;
         }
         insert_pos = i;
@@ -180,7 +174,7 @@ std::wstring GetCommand(LPWSTR param)
             // args.push_back(L"--force-local-ntp");
             // args.push_back(L"--disable-background-networking");
 
-            args.push_back(L"--disable-features=RendererCodeIntegrity,FlashDeprecationWarning");
+            // args.push_back(L"--disable-features=RendererCodeIntegrity");
 
             // 獲取命令行，然後追加參數
             // 截取拆分每個--開頭的參數，然後多次 args.push_back
@@ -216,23 +210,14 @@ std::wstring GetCommand(LPWSTR param)
 
             // if (IsNeedPortable())
             {
-                auto diskcache = GetDiskCacheDir();
                 auto userdata = GetUserDataDir();
+                auto diskcache = GetDiskCacheDir();
 
-
+                args.push_back(L"--user-data-dir=" + userdata);
                 if (diskcache != userdata)
                 {
-                    wchar_t temp[MAX_PATH];
-                    wsprintf(temp, L"--disk-cache-dir=%s", diskcache.c_str());
-                    args.push_back(temp);
+                    args.push_back(L"--disk-cache-dir=" + diskcache);
                 }
-            }
-            {
-                auto userdata = GetUserDataDir();
-
-                wchar_t temp[MAX_PATH];
-                wsprintf(temp, L"--user-data-dir=%s", userdata.c_str());
-                args.push_back(temp);
             }
         }
     }
