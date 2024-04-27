@@ -507,8 +507,7 @@ bool IsOnNewTab(NodePtr top)
                     if (GetAccessibleRole(child) == ROLE_SYSTEM_PUSHBUTTON)
                     {
                         GetAccessibleName(child, [&new_tab_name](BSTR bstr) {
-                            new_tab_name = _wcsdup(bstr);
-                             DebugLog(L"new_tab_name: %s", bstr);
+                            new_tab_name.reset(_wcsdup(bstr));
                         });
                     }
                     return false;
@@ -525,18 +524,9 @@ bool IsOnNewTab(NodePtr top)
                             if (GetAccessibleState(child) & STATE_SYSTEM_SELECTED)
                                 {
                                     GetAccessibleName(child, [&flag, &new_tab_name](BSTR bstr) {
-                                        if (_wcsnicmp(bstr, new_tab_name, wcslen(new_tab_name)) == 0)
-                                        {
-                                            flag = true;
-                                        }
-                                        else if (wcsstr(bstr, L"about:blank") == bstr)
-                                        {
-                                            flag = true;
-                                        }
-                                        else
-                                        {
-                                            flag = false;
-                                        }
+                                        std::wstring_view bstr_view(bstr);
+                                        std::wstring_view new_tab_view(new_tab_name.get());
+                                        flag = (bstr_view.compare(0, new_tab_view.size(), new_tab_view) == 0) || (bstr_view.substr(0, 11) == L"about:blank");
                                     });
                                 }
                             return false;
