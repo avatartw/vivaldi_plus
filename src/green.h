@@ -148,6 +148,8 @@ NET_API_STATUS WINAPI MyNetUserGetInfo(
 
 #define PROCESS_CREATION_MITIGATION_POLICY_BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_ON (0x00000001ui64 << 44)
 
+#define PROCESS_CREATION_MITIGATION_POLICY_WIN32K_SYSTEM_CALL_DISABLE_ALWAYS_ON (0x00000001ui64 << 28)
+
 typedef BOOL(WINAPI *pUpdateProcThreadAttribute)(
     LPPROC_THREAD_ATTRIBUTE_LIST lpAttributeList,
     DWORD dwFlags,
@@ -170,8 +172,10 @@ BOOL WINAPI MyUpdateProcThreadAttribute(
 {
     if (Attribute == PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY && cbSize >= sizeof(DWORD64))
     {
+        // https://source.chromium.org/chromium/chromium/src/+/main:sandbox/win/src/process_mitigations.cc;l=362;drc=4c2fec5f6699ffeefd93137d2bf8c03504c6664c
         PDWORD64 policy_value_1 = &((PDWORD64)lpValue)[0];
         *policy_value_1 &= ~PROCESS_CREATION_MITIGATION_POLICY_BLOCK_NON_MICROSOFT_BINARIES_ALWAYS_ON;
+        *policy_value_1 &= ~PROCESS_CREATION_MITIGATION_POLICY_WIN32K_SYSTEM_CALL_DISABLE_ALWAYS_ON;
     }
     return RawUpdateProcThreadAttribute(lpAttributeList, dwFlags, Attribute, lpValue, cbSize, lpPreviousValue, lpReturnSize);
 }
