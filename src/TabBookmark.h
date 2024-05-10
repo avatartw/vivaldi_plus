@@ -114,7 +114,7 @@ bool handleRightClick(WPARAM wParam, LPARAM lParam, PMOUSEHOOKSTRUCT pmouse)
         }
         else
         {
-            SendKeys(VK_MBUTTON);
+            SendKey(VK_MBUTTON);
         }
         return true;
     }
@@ -212,6 +212,8 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam)
             return CallNextHookEx(mouse_hook, nCode, wParam, lParam);
         }
 
+        // Defining a `dwExtraInfo` value to prevent hook the message sent by
+        // Chrome++ itself.
         if (pmouse->dwExtraInfo == MAGIC_CODE)
         {
             // DebugLog(L"MAGIC_CODE %x", wParam);
