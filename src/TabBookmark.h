@@ -161,7 +161,7 @@ bool handleBookmark(WPARAM wParam, LPARAM lParam, PMOUSEHOOKSTRUCT pmouse)
 
     if (TopContainerView && isOnBookmark && !isOnNewTab)
     {
-        SendKeys(VK_MBUTTON, VK_SHIFT);
+        SendKey(VK_MBUTTON, VK_SHIFT);
         return true;
     }
 
@@ -186,7 +186,7 @@ bool handleBookmarkMenu(WPARAM wParam, LPARAM lParam, PMOUSEHOOKSTRUCT pmouse)
 
     if (TopContainerView && MenuBarPane && isOnMenuBookmark && !isOnNewTab)
     {
-        SendKeys(VK_MBUTTON, VK_SHIFT);
+        SendKey(VK_MBUTTON, VK_SHIFT);
         return true;
     }
 
@@ -342,7 +342,7 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
 
         if (open_url_ing)
         {
-            SendKeys(VK_MENU, VK_RETURN);
+            SendKey(VK_MENU, VK_RETURN);
             return 1;
         }
     }
