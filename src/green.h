@@ -7,7 +7,7 @@ BOOL WINAPI FakeGetComputerName(
     _Out_ LPTSTR lpBuffer,
     _Inout_ LPDWORD lpnSize)
 {
-    return 0;
+    return false;
 }
 
 BOOL WINAPI FakeGetVolumeInformation(
@@ -20,7 +20,7 @@ BOOL WINAPI FakeGetVolumeInformation(
     _Out_opt_ LPTSTR lpFileSystemNameBuffer,
     _In_ DWORD nFileSystemNameSize)
 {
-    return 0;
+    return false;
 }
 
 BOOL WINAPI MyCryptProtectData(
@@ -47,7 +47,7 @@ typedef BOOL(WINAPI *pCryptUnprotectData)(
     _In_ DWORD dwFlags,
     _Out_ DATA_BLOB *pDataOut);
 
-pCryptUnprotectData RawCryptUnprotectData = NULL;
+pCryptUnprotectData RawCryptUnprotectData = nullptr;
 
 BOOL WINAPI MyCryptUnprotectData(
     _In_ DATA_BLOB *pDataIn,
@@ -77,7 +77,7 @@ typedef DWORD(WINAPI *pLogonUserW)(
     DWORD dwLogonProvider,
     PHANDLE phToken);
 
-pLogonUserW RawLogonUserW = NULL;
+pLogonUserW RawLogonUserW = nullptr;
 
 DWORD WINAPI MyLogonUserW(
     LPCWSTR lpszUsername,
@@ -95,7 +95,7 @@ DWORD WINAPI MyLogonUserW(
 
 typedef BOOL(WINAPI *pIsOS)(DWORD dwOS);
 
-pIsOS RawIsOS = NULL;
+pIsOS RawIsOS = nullptr;
 
 BOOL WINAPI MyIsOS(
     DWORD dwOS)
@@ -115,7 +115,7 @@ typedef NET_API_STATUS(WINAPI *pNetUserGetInfo)(
     DWORD level,
     LPBYTE *bufptr);
 
-pNetUserGetInfo RawNetUserGetInfo = NULL;
+pNetUserGetInfo RawNetUserGetInfo = nullptr;
 
 NET_API_STATUS WINAPI MyNetUserGetInfo(
     LPCWSTR servername,
@@ -189,7 +189,7 @@ void MakeGreen()
         PBYTE GetVolumeInformationW = (PBYTE)GetProcAddress(kernel32, "GetVolumeInformationW");
         PBYTE UpdateProcThreadAttribute = (PBYTE)GetProcAddress(kernel32, "UpdateProcThreadAttribute");
         
-        MH_STATUS status = MH_CreateHook(GetComputerNameW, FakeGetComputerName, NULL);
+        MH_STATUS status = MH_CreateHook(GetComputerNameW, FakeGetComputerName, nullptr);
         if (status == MH_OK)
         {
             MH_EnableHook(GetComputerNameW);
@@ -198,7 +198,7 @@ void MakeGreen()
         {
             DebugLog(L"MH_CreateHook GetComputerNameW failed:%d", status);
         }
-        status = MH_CreateHook(GetVolumeInformationW, FakeGetVolumeInformation, NULL);
+        status = MH_CreateHook(GetVolumeInformationW, FakeGetVolumeInformation, nullptr);
         if (status == MH_OK)
         {
             MH_EnableHook(GetVolumeInformationW);
@@ -225,7 +225,7 @@ void MakeGreen()
         PBYTE CryptProtectData = (PBYTE)GetProcAddress(Crypt32, "CryptProtectData");
         PBYTE CryptUnprotectData = (PBYTE)GetProcAddress(Crypt32, "CryptUnprotectData");
 
-        MH_STATUS status = MH_CreateHook(CryptProtectData, MyCryptProtectData, NULL);
+        MH_STATUS status = MH_CreateHook(CryptProtectData, MyCryptProtectData, nullptr);
         if (status == MH_OK)
         {
             MH_EnableHook(CryptProtectData);

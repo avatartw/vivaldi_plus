@@ -91,7 +91,7 @@ void TraversalAccessible(NodePtr node, Function f)
         std::unique_ptr<VARIANT[]> varChildren(new VARIANT[childCount]);
         if (S_OK == AccessibleChildren(node.Get(), 0, childCount, varChildren.get(), &childCount))
         {
-            for (int i = 0; i < childCount; i++)
+            for (int i = 0; i < childCount; ++i)
             {
                 if (varChildren[i].vt == VT_DISPATCH)
                 {
@@ -123,7 +123,7 @@ void TraversalRawAccessible(NodePtr node, Function f)
         std::unique_ptr<VARIANT[]> varChildren(new VARIANT[childCount]);
         if (S_OK == AccessibleChildren(node.Get(), 0, childCount, varChildren.get(), &childCount))
         {
-            for (int i = 0; i < childCount; i++)
+            for (int i = 0; i < childCount; ++i)
             {
                 if (varChildren[i].vt == VT_DISPATCH)
                 {
@@ -341,7 +341,7 @@ NodePtr FindChildElement(NodePtr parent, long role, int skipcount = 0)
                 {
                     element = child;
                 }
-                i++;
+                ++i;
             }
             return element != nullptr;
         });
@@ -444,13 +444,13 @@ bool IsOnlyOneTab(NodePtr top)
                         // if (GetAccessibleRole(child) == ROLE_SYSTEM_PAGETAB && GetChildCount(child))
                         if (GetAccessibleRole(child) == ROLE_SYSTEM_PAGETAB)
                         {
-                            tab_count++;
+                            ++tab_count;
                         }
                         if ((GetAccessibleRole(child) == ROLE_SYSTEM_PAGETABLIST)
                             && (GetAccessibleState(child) & STATE_SYSTEM_COLLAPSED))
                             // 判斷是否存在摺疊的標籤組
                         {
-                            tab_count++;
+                            ++tab_count;
                         }
                         return false;
                     });
@@ -564,12 +564,12 @@ bool IsOnBookmark(NodePtr top, POINT pt)
                         GetAccessibleDescription(child, [&flag](BSTR bstr) {
                             if (bstr)
                             {
-                                if (wcsstr(bstr, L".") != NULL && wcsstr(bstr, L"javascript:") != bstr)
+                                if (wcsstr(bstr, L".") != nullptr && wcsstr(bstr, L"javascript:") != bstr)
                                 {
                                     DebugLog(L"OnBookmark");
                                     flag = true;
                                 }
-                                if (wcsstr(bstr, L":") != NULL && wcsstr(bstr, L"javascript:") != bstr)
+                                if (wcsstr(bstr, L":") != nullptr && wcsstr(bstr, L"javascript:") != bstr)
                                 {
                                     DebugLog(L"OnBookmark");
                                     flag = true;
@@ -613,12 +613,12 @@ bool IsOnMenuBookmark(NodePtr top, POINT pt)
                                 GetAccessibleDescription(child, [&flag](BSTR bstr) {
                                     if (bstr)
                                     {
-                                        if (wcsstr(bstr, L".") != NULL && wcsstr(bstr, L"javascript:") != bstr)
+                                        if (wcsstr(bstr, L".") != nullptr && wcsstr(bstr, L"javascript:") != bstr)
                                         {
                                             DebugLog(L"OnBookmark");
                                             flag = true;
                                         }
-                                        if (wcsstr(bstr, L":") != NULL && wcsstr(bstr, L"javascript:") != bstr)
+                                        if (wcsstr(bstr, L":") != nullptr && wcsstr(bstr, L"javascript:") != bstr)
                                         {
                                             DebugLog(L"OnBookmark");
                                             flag = true;

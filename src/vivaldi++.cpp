@@ -21,7 +21,7 @@ HMODULE hInstance;
 #include "green.h"
 
 typedef int (*Startup)();
-Startup ExeMain = NULL;
+Startup ExeMain = nullptr;
 
 void VivaldiPlus()
 {
@@ -77,7 +77,7 @@ void InstallLoader()
 {
     // 获取程序入口点
     MODULEINFO mi;
-    GetModuleInformation(GetCurrentProcess(), GetModuleHandle(NULL), &mi, sizeof(MODULEINFO));
+    GetModuleInformation(GetCurrentProcess(), GetModuleHandle(nullptr), &mi, sizeof(MODULEINFO));
     PBYTE entry = (PBYTE)mi.EntryPoint;
 
     // 入口点跳转到Loader

@@ -133,7 +133,7 @@ void HideAndShow()
     }
     else
     {
-        for (auto r_iter = hwnd_list.rbegin(); r_iter != hwnd_list.rend(); r_iter++)
+        for (auto r_iter = hwnd_list.rbegin(); r_iter != hwnd_list.rend(); ++r_iter)
         {
             ShowWindow(*r_iter, SW_SHOW);
         }
@@ -168,10 +168,10 @@ void Hotkey(const std::wstring &keys, HotkeyAction action)
 
         std::thread th([flag, action]() {
             // 注册热键
-            RegisterHotKey(NULL, 0, LOWORD(flag), HIWORD(flag));
+            RegisterHotKey(nullptr, 0, LOWORD(flag), HIWORD(flag));
 
             MSG msg;
-            while (GetMessage(&msg, NULL, 0, 0))
+            while (GetMessage(&msg, nullptr, 0, 0))
             {
                 if (msg.message == WM_HOTKEY)
                 {

@@ -80,8 +80,8 @@ bool CheckHeader(uint8_t *buffer, PAK_ENTRY *&pak_entry, PAK_ENTRY *&end_entry)
 template <typename Function>
 void PakFind(uint8_t *buffer, uint8_t *pos, Function f)
 {
-    PAK_ENTRY *pak_entry = NULL;
-    PAK_ENTRY *end_entry = NULL;
+    PAK_ENTRY *pak_entry = nullptr;
+    PAK_ENTRY *end_entry = nullptr;
 
     // 检查文件头
     if (!CheckHeader(buffer, pak_entry, end_entry))
@@ -103,8 +103,8 @@ void PakFind(uint8_t *buffer, uint8_t *pos, Function f)
 template <typename Function>
 void TraversalGZIPFile(uint8_t *buffer, Function f)
 {
-    PAK_ENTRY *pak_entry = NULL;
-    PAK_ENTRY *end_entry = NULL;
+    PAK_ENTRY *pak_entry = nullptr;
+    PAK_ENTRY *end_entry = nullptr;
 
     // 检查文件头
     if (!CheckHeader(buffer, pak_entry, end_entry))

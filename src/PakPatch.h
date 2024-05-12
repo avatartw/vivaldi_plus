@@ -5,7 +5,7 @@
 
 DWORD resources_pak_size = 0;
 
-HANDLE resources_pak_map = NULL;
+HANDLE resources_pak_map = nullptr;
 
 typedef HANDLE(WINAPI *pMapViewOfFile)(
     _In_ HANDLE hFileMappingObject,
@@ -14,7 +14,7 @@ typedef HANDLE(WINAPI *pMapViewOfFile)(
     _In_ DWORD dwFileOffsetLow,
     _In_ SIZE_T dwNumberOfBytesToMap);
 
-pMapViewOfFile RawMapViewOfFile = NULL;
+pMapViewOfFile RawMapViewOfFile = nullptr;
 
 HANDLE WINAPI MyMapViewOfFile(
     _In_ HANDLE hFileMappingObject,
@@ -30,7 +30,7 @@ HANDLE WINAPI MyMapViewOfFile(
                                          dwFileOffsetLow, dwNumberOfBytesToMap);
 
         // 不再需要hook
-        resources_pak_map = NULL;
+        resources_pak_map = nullptr;
         MH_DisableHook(MapViewOfFile);
 
         if (buffer)
@@ -80,7 +80,7 @@ HANDLE WINAPI MyMapViewOfFile(
                             dwFileOffsetLow, dwNumberOfBytesToMap);
 }
 
-HANDLE resources_pak_file = NULL;
+HANDLE resources_pak_file = nullptr;
 
 typedef HANDLE(WINAPI *pCreateFileMapping)(
     _In_ HANDLE hFile,
@@ -90,7 +90,7 @@ typedef HANDLE(WINAPI *pCreateFileMapping)(
     _In_ DWORD dwMaximumSizeLow,
     _In_opt_ LPCTSTR lpName);
 
-pCreateFileMapping RawCreateFileMapping = NULL;
+pCreateFileMapping RawCreateFileMapping = nullptr;
 
 HANDLE WINAPI MyCreateFileMapping(
     _In_ HANDLE hFile,
@@ -107,7 +107,7 @@ HANDLE WINAPI MyCreateFileMapping(
                                                  dwMaximumSizeHigh, dwMaximumSizeLow, lpName);
 
         // 不再需要hook
-        resources_pak_file = NULL;
+        resources_pak_file = nullptr;
         MH_DisableHook(CreateFileMappingW);
 
         if (MH_CreateHook(MapViewOfFile, MyMapViewOfFile, (LPVOID *)&RawMapViewOfFile) == MH_OK)
@@ -130,7 +130,7 @@ typedef HANDLE(WINAPI *pCreateFile)(
     _In_ DWORD dwFlagsAndAttributes,
     _In_opt_ HANDLE hTemplateFile);
 
-pCreateFile RawCreateFile = NULL;
+pCreateFile RawCreateFile = nullptr;
 
 HANDLE WINAPI MyCreateFile(
     _In_ LPCTSTR lpFileName,
@@ -148,7 +148,7 @@ HANDLE WINAPI MyCreateFile(
     if (isEndWith(lpFileName, L"resources.pak"))
     {
         resources_pak_file = file;
-        resources_pak_size = GetFileSize(resources_pak_file, NULL);
+        resources_pak_size = GetFileSize(resources_pak_file, nullptr);
 
         if (MH_CreateHook(CreateFileMappingW, MyCreateFileMapping, (LPVOID *)&RawCreateFileMapping) == MH_OK)
         {
