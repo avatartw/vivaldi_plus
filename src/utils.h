@@ -1,12 +1,17 @@
 #ifndef UTILS_H_
 #define UTILS_H_
 
+#include <algorithm>
+#include <cctype>
+#include <functional>
 #include <map>
 #include <string>
 #include <vector>
-#include <cctype>
-#include <algorithm>
-#include <functional>
+
+#include <windows.h>
+
+#include <Shlwapi.h>
+#pragma comment(lib, "Shlwapi.lib")
 
 #include "FastSearch.h"
 
@@ -48,7 +53,7 @@ uint8_t *SearchModuleRaw(HMODULE module, const uint8_t *sub, int m)
     PIMAGE_SECTION_HEADER section = (PIMAGE_SECTION_HEADER)((char *)nt_header + sizeof(DWORD) +
                                                             sizeof(IMAGE_FILE_HEADER) + nt_header->FileHeader.SizeOfOptionalHeader);
 
-    for (int i = 0; i < nt_header->FileHeader.NumberOfSections; i++)
+    for (int i = 0; i < nt_header->FileHeader.NumberOfSections; ++i)
     {
         if (strcmp((const char *)section[i].Name, ".text") == 0)
         {
@@ -56,7 +61,7 @@ uint8_t *SearchModuleRaw(HMODULE module, const uint8_t *sub, int m)
             break;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 uint8_t *SearchModuleRaw2(HMODULE module, const uint8_t *sub, int m)
@@ -67,7 +72,7 @@ uint8_t *SearchModuleRaw2(HMODULE module, const uint8_t *sub, int m)
     PIMAGE_SECTION_HEADER section = (PIMAGE_SECTION_HEADER)((char *)nt_header + sizeof(DWORD) +
                                                             sizeof(IMAGE_FILE_HEADER) + nt_header->FileHeader.SizeOfOptionalHeader);
 
-    for (int i = 0; i < nt_header->FileHeader.NumberOfSections; i++)
+    for (int i = 0; i < nt_header->FileHeader.NumberOfSections; ++i)
     {
         if (strcmp((const char *)section[i].Name, ".rdata") == 0)
         {
@@ -75,31 +80,49 @@ uint8_t *SearchModuleRaw2(HMODULE module, const uint8_t *sub, int m)
             break;
         }
     }
-    return NULL;
+    return nullptr;
 }
-#include <Shlwapi.h>
-#pragma comment(lib, "Shlwapi.lib")
 
 // 获得程序所在文件夹
 std::wstring GetAppDir()
 {
     wchar_t path[MAX_PATH];
-    ::GetModuleFileName(NULL, path, MAX_PATH);
+    ::GetModuleFileName(nullptr, path, MAX_PATH);
     ::PathRemoveFileSpec(path);
     return path;
 }
 
+std::string wstring_to_string(const std::wstring& wstr) {
+  std::string strTo;
+  auto szTo = new char[wstr.length() + 1];
+  szTo[wstr.size()] = '\0';
+  WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), -1, szTo,
+                      static_cast<int>(wstr.length()), nullptr, nullptr);
+  strTo = szTo;
+  delete[] szTo;
+  return strTo;
+}
+
 void DebugLog(const wchar_t *format, ...)
 {
-//    va_list args;
+//  va_list args;
 //
-//    va_start(args, format);
-//    auto str = Format(format, args);
-//    va_end(args);
+//  va_start(args, format);
+//  auto str = Format(format, args);
+//  va_end(args);
 //
-//    str = Format(L"[vivaldi++]%s\n", str.c_str());
+//  str = Format(L"[vivaldi++] %s\n", str.c_str());
 //
-//    OutputDebugStringW(str.c_str());
+//  std::string nstr = wstring_to_string(str);
+//  const char* cstr = nstr.c_str();
+//
+//  FILE* fp = nullptr;
+//  std::wstring logPath = GetAppDir() + L"\\Vivaldi++_Debug.log";
+//  _wfopen_s(&fp, logPath.c_str(), L"a+");
+//  if (fp) {
+//    fwrite(cstr, strlen(cstr), 1, fp);
+//    fclose(fp);
+//  }
 }
 
 // https://source.chromium.org/chromium/chromium/src/+/main:chrome/app/chrome_command_ids.h?q=chrome_command_ids.h&ss=chromium%2Fchromium%2Fsrc
@@ -403,7 +426,7 @@ bool isEndWith(const wchar_t *s, const wchar_t *sub)
 std::wstring GetAbsolutePath(const std::wstring &path)
 {
     wchar_t buffer[MAX_PATH];
-    ::GetFullPathNameW(path.c_str(), MAX_PATH, buffer, NULL);
+    ::GetFullPathNameW(path.c_str(), MAX_PATH, buffer, nullptr);
     return buffer;
 }
 
