@@ -121,13 +121,13 @@ std::wstring GetCrCommandLine()
     if (IsCustomIniExist())
     {
         std::wstring IniPath = GetAppDir() + L"\\config.ini";
-        std::vector<TCHAR> CommandLineBuffer(64); // 初始大小為 1024
+        std::vector<TCHAR> CommandLineBuffer(64); // 初始大小為 64
         DWORD bytesRead = ::GetPrivateProfileStringW(L"General", L"CommandLine", L"", CommandLineBuffer.data(), CommandLineBuffer.size(), IniPath.c_str());
 
         // 如果讀取的字符數接近緩衝區的大小，可能需要更大的緩衝區
         while (bytesRead >= CommandLineBuffer.size() - 1)
         {
-            CommandLineBuffer.resize(CommandLineBuffer.size() * 2);
+            CommandLineBuffer.resize(CommandLineBuffer.size() + 64);
             bytesRead = ::GetPrivateProfileStringW(L"General", L"CommandLine", L"", CommandLineBuffer.data(), CommandLineBuffer.size(), IniPath.c_str());
         }
 
